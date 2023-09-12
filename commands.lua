@@ -1,3 +1,11 @@
+function DRV.OnDriverInit(init)
+	C4:AddVariable(EntityID, "", "STRING")
+end
+
+function DRV.OnDriverDestroyed(init)
+	C4:DeleteVariable(EntityID)
+end
+
 function RFP.RECEIEVE_STATE(idBinding, strCommand, tParams)
     local jsonData = JSON:decode(tParams.response)
 
@@ -61,7 +69,8 @@ function Parse(data)
 
             tParams = {
                 CELSIUS = celciusValue,
-                FAHRENHEIT = fahrenheitValue
+                FAHRENHEIT = fahrenheitValue,
+                TIMESTAMP = os.date("%c")
             }
 
             C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
@@ -69,12 +78,13 @@ function Parse(data)
             local numericValue = tonumber(state)
             
             tParams = {
-                VALUE = numericValue
+                VALUE = numericValue,
+                TIMESTAMP = os.date("%c")
             }
 
             C4:SendToProxy(600, 'VALUE_CHANGED', tParams, "NOTIFY")
         else
-            
+            C4:SetVariable(EntityID, tostring(state))
         end
     end
 end
