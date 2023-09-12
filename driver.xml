@@ -1,0 +1,101 @@
+<devicedata>
+	<copyright>BP</copyright>
+	<creator>BP</creator>
+	<manufacturer>BP</manufacturer>
+	<name>HA Generic Sensor</name>
+	<model>HA Generic Sensor</model>
+	<created>09/10/2023 12:00</created>
+	<modified>09/10/2023 12:00</modified>
+	<version>1</version>
+	<control>lua_gen</control>
+	<controlmethod>IP</controlmethod>
+	<driver>DriverWorks</driver>
+	<combo>true</combo>
+	<composer_categories>
+		<category>Experience Button</category>
+	</composer_categories>
+	<config>
+		<script jit="1" file="Control4-HA-Base/driver.lua"/>
+		<properties>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<readonly>false</readonly>
+				<default>sensor.front_door_battery_level</default>
+			</property>
+			<property>
+				<name>Sensor Type</name>
+				<type>LIST</type>
+				<items>
+					<item>Generic</item>
+					<item>Temperature</item>
+					<item>Humidity</item>
+				</items>
+				<default>Generic</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Driver Version</name>
+				<default></default>
+				<type>STRING</type>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Debug Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+		</actions>
+		<commands/>
+	</config>
+	<proxy name="HA Generic Sensor">other</proxy>
+	<capabilities>
+	</capabilities>
+	<events/>
+	<connections>
+		<connection>
+			<id>999</id>
+			<facing>1</facing>
+			<type>1</type>
+			<connectionname>Device Link</connectionname>
+			<consumer>True</consumer>
+			<classes>
+				<class>
+					<classname>HA_DEVICE</classname>
+					<autobind>True</autobind>
+				</class>
+			</classes>
+		</connection>
+		<connection>
+			<id>500</id>
+			<facing>6</facing>
+			<connectionname>Temperature Value</connectionname>
+			<type>1</type>
+			<consumer>False</consumer>
+			<classes>
+				<class>
+					<classname>TEMPERATURE_VALUE</classname>
+				</class>
+			</classes>
+		</connection>
+		<connection>
+			<id>600</id>
+			<facing>6</facing>
+			<connectionname>Humidity</connectionname>
+			<type>1</type>
+			<consumer>False</consumer>
+			<classes>
+				<class>
+					<classname>HUMIDITY_VALUE</classname>
+				</class>
+			</classes>
+		</connection>
+	</connections>
+</devicedata>
