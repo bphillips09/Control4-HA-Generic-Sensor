@@ -1,9 +1,9 @@
 function DRV.OnDriverInit(init)
-	C4:AddVariable(EntityID, "", "STRING")
+    C4:AddVariable("SENSOR_STATE", "", "STRING")
 end
 
 function DRV.OnDriverDestroyed(init)
-	C4:DeleteVariable(EntityID)
+    C4:DeleteVariable("SENSOR_STATE")
 end
 
 function RFP.RECEIEVE_STATE(idBinding, strCommand, tParams)
@@ -52,6 +52,8 @@ function Parse(data)
     end
 
     if state ~= nil then
+        C4:SetVariable("SENSOR_STATE", tostring(state))
+
         if sensorType == "Temperature" then
             local numericValue = tonumber(state)
             local measurement = attributes["unit_of_measurement"]
@@ -76,15 +78,13 @@ function Parse(data)
             C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
         elseif sensorType == "Humidity" then
             local numericValue = tonumber(state)
-            
+
             tParams = {
                 VALUE = numericValue,
                 TIMESTAMP = os.date("%c")
             }
 
             C4:SendToProxy(600, 'VALUE_CHANGED', tParams, "NOTIFY")
-        else
-            C4:SetVariable(EntityID, tostring(state))
         end
     end
 end
