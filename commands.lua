@@ -1,3 +1,6 @@
+SENT_INITIAL_TEMPERATURE = false
+SENT_INITIAL_HUMIDITY = false
+
 function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
 end
@@ -69,22 +72,44 @@ function Parse(data)
                 fahrenheitValue = ToFahrenheit(celciusValue)
             end
 
-            tParams = {
-                CELSIUS = celciusValue,
-                FAHRENHEIT = fahrenheitValue,
-                TIMESTAMP = os.date("%c")
-            }
+            if SENT_INITIAL_TEMPERATURE then
+                tParams = {
+                    CELSIUS = celciusValue,
+                    FAHRENHEIT = fahrenheitValue,
+                    TIMESTAMP = tostring(os.time())
+                }
 
-            C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
+                C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
+            else
+                SENT_INITIAL_TEMPERATURE = true
+
+                tParams = {
+                    STATUS = "active",
+                    TIMESTAMP = tostring(os.time())
+                }
+
+                C4:SendToProxy(500, 'VALUE_INITIALIZED', tParams, "NOTIFY")
+            end
         elseif sensorType == "Humidity" then
             local numericValue = tonumber(state)
 
-            tParams = {
-                VALUE = numericValue,
-                TIMESTAMP = os.date("%c")
-            }
+            if SENT_INITIAL_HUMIDITY then
+                tParams = {
+                    VALUE = numericValue,
+                    TIMESTAMP = tostring(os.time())
+                }
 
-            C4:SendToProxy(600, 'VALUE_CHANGED', tParams, "NOTIFY")
+                C4:SendToProxy(600, 'VALUE_CHANGED', tParams, "NOTIFY")
+            else
+                SENT_INITIAL_HUMIDITY = true
+
+                tParams = {
+                    STATUS = "active",
+                    TIMESTAMP = tostring(os.time())
+                }
+
+                C4:SendToProxy(600, 'VALUE_INITIALIZED', tParams, "NOTIFY")
+            end
         end
     end
 end
