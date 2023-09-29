@@ -52,6 +52,10 @@
 			</property>
 		</properties>
 		<actions>
+			<action>
+				<name>Refresh Sensor</name>
+				<command>REFRESH</command>
+			</action>
 		</actions>
 		<commands/>
 	</config>
