@@ -5,8 +5,8 @@
 	<name>HA Generic Sensor</name>
 	<model>HA Generic Sensor</model>
 	<created>09/10/2023 12:00</created>
-	<modified>09/27/2023 12:00</modified>
-	<version>102</version>
+	<modified>09/14/2023 12:00</modified>
+	<version>103</version>
 	<control>lua_gen</control>
 	<controlmethod>IP</controlmethod>
 	<driver>DriverWorks</driver>
@@ -52,10 +52,6 @@
 			</property>
 		</properties>
 		<actions>
-			<action>
-				<name>Refresh Sensor</name>
-				<command>REFRESH</command>
-			</action>
 		</actions>
 		<commands/>
 	</config>
