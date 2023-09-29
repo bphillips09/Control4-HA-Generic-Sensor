@@ -4,7 +4,10 @@ SENT_INITIAL_HUMIDITY = false
 function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
 end
-
+function DRV.OnDriverLateInit(init)
+    print("driver late init, starting refresh timer")
+    C4:SetTimer(30000, function(timer, skips) CheckInTimer(timer, skips) end, true)
+end
 function DRV.OnDriverDestroyed(init)
     C4:DeleteVariable("SENSOR_STATE")
 end
@@ -53,32 +56,42 @@ function Parse(data)
     if not Connected then
         Connected = true
     end
-
-    if state ~= nil then
+    if state == "unavailable" then
+        C4:SetVariable("SENSOR_STATE", tostring(state))
+        if sensorType == "Temperature" then
+            SENT_INITIAL_TEMPERATURE = false
+            C4:SendToProxy(500, "VALUE_UNAVAILABLE", { STATUS = "offline" }, "NOTIFY")
+        end
+        if sensorType == "Humidity" then
+            SENT_INITIAL_HUMIDITY = false
+            C4:SendToProxy(600, "VALUE_UNAVAILABLE", { STATUS = "offline" }, "NOTIFY")
+        end
+    return end
+    
+    if state ~= nil and state ~= "unavailable" then
         C4:SetVariable("SENSOR_STATE", tostring(state))
 
         if sensorType == "Temperature" then
             local numericValue = tonumber(state)
             local measurement = attributes["unit_of_measurement"]
 
-            local celciusValue
+            local celsiusValue
             local fahrenheitValue
 
             if measurement == "°F" then
                 fahrenheitValue = numericValue
-                celciusValue = ToCelsius(fahrenheitValue)
+                celsiusValue = ToCelsius(fahrenheitValue)
             elseif measurement == "°C" then
-                celciusValue = numericValue
-                fahrenheitValue = ToFahrenheit(celciusValue)
+                celsiusValue = numericValue
+                fahrenheitValue = ToFahrenheit(celsiusValue)
             end
 
             if SENT_INITIAL_TEMPERATURE then
                 tParams = {
-                    CELSIUS = celciusValue,
+                    CELSIUS = celsiusValue,
                     FAHRENHEIT = fahrenheitValue,
                     TIMESTAMP = tostring(os.time())
                 }
-
                 C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
             else
                 SENT_INITIAL_TEMPERATURE = true
@@ -87,8 +100,20 @@ function Parse(data)
                     STATUS = "active",
                     TIMESTAMP = tostring(os.time())
                 }
-
-                C4:SendToProxy(500, 'VALUE_INITIALIZED', tParams, "NOTIFY")
+                C4:SendToProxy(500, 'VALUE_INITIALIZE', tParams, "NOTIFY")
+                if measurement == "°F" then
+                    fahrenheitValue = numericValue
+                    celsiusValue = ToCelsius(fahrenheitValue)
+                elseif measurement == "°C" then
+                    celsiusValue = numericValue
+                    fahrenheitValue = ToFahrenheit(celsiusValue)
+                end
+                tParams = {
+                    CELSIUS = celsiusValue,
+                    FAHRENHEIT = fahrenheitValue,
+                    TIMESTAMP = tostring(os.time())
+                }
+                C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
             end
         elseif sensorType == "Humidity" then
             local numericValue = tonumber(state)
@@ -108,8 +133,16 @@ function Parse(data)
                     TIMESTAMP = tostring(os.time())
                 }
 
-                C4:SendToProxy(600, 'VALUE_INITIALIZED', tParams, "NOTIFY")
+                C4:SendToProxy(600, 'VALUE_INITIALIZE', tParams, "NOTIFY")
             end
         end
     end
+end
+function CheckInTimer(timer, skips)
+    print("timer expired! refreshing state")
+    local tParams = {
+		entity = EntityID
+	}
+	
+	C4:SendToProxy(999, "HA_GET_STATE", tParams)
 end
