@@ -4,10 +4,11 @@ SENT_INITIAL_HUMIDITY = false
 function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
 end
+
 function DRV.OnDriverLateInit(init)
-    print("driver late init, starting refresh timer")
-    C4:SetTimer(30000, function(timer, skips) CheckInTimer(timer, skips) end, true)
+    C4:SetTimer(30000, CheckInTimer, true)
 end
+
 function DRV.OnDriverDestroyed(init)
     C4:DeleteVariable("SENSOR_STATE")
 end
@@ -38,7 +39,6 @@ end
 
 function Parse(data)
     if data == nil then
-        print("NO DATA")
         return
     end
 
@@ -66,8 +66,9 @@ function Parse(data)
             SENT_INITIAL_HUMIDITY = false
             C4:SendToProxy(600, "VALUE_UNAVAILABLE", { STATUS = "offline" }, "NOTIFY")
         end
-    return end
-    
+        return
+    end
+
     if state ~= nil and state ~= "unavailable" then
         C4:SetVariable("SENSOR_STATE", tostring(state))
 
@@ -138,11 +139,7 @@ function Parse(data)
         end
     end
 end
-function CheckInTimer(timer, skips)
-    print("timer expired! refreshing state")
-    local tParams = {
-		entity = EntityID
-	}
-	
-	C4:SendToProxy(999, "HA_GET_STATE", tParams)
+
+function CheckInTimer()
+    EC.Refresh()
 end
