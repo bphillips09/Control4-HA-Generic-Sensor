@@ -139,5 +139,10 @@ function Parse(data)
     end
 end
 function CheckInTimer(timer, skips)
-    EC.REFRESH()
+    print("timer expired! refreshing state")
+    local tParams = {
+		entity = EntityID
+	}
+	
+	C4:SendToProxy(999, "HA_GET_STATE", tParams)
 end
