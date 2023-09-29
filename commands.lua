@@ -6,7 +6,7 @@ function DRV.OnDriverInit(init)
 end
 
 function DRV.OnDriverLateInit(init)
-    C4:SetTimer(30000, CheckInTimer, true)
+    C4:SetTimer(30000, EC.REFRESH, true)
 end
 
 function DRV.OnDriverDestroyed(init)
@@ -138,8 +138,4 @@ function Parse(data)
             end
         end
     end
-end
-
-function CheckInTimer()
-    EC.Refresh()
 end
