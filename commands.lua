@@ -5,10 +5,6 @@ function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
 end
 
-function DRV.OnDriverLateInit(init)
-    C4:SetTimer(30000, EC.REFRESH, true)
-end
-
 function DRV.OnDriverDestroyed(init)
     C4:DeleteVariable("SENSOR_STATE")
 end

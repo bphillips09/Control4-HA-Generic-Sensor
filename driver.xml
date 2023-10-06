@@ -35,6 +35,16 @@
 				<readonly>false</readonly>
 			</property>
 			<property>
+				<name>Poll Timer</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
 				<name>Driver Version</name>
 				<default></default>
 				<type>STRING</type>
