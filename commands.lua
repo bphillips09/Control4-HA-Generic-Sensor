@@ -3,10 +3,14 @@ SENT_INITIAL_HUMIDITY = false
 
 function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
+    C4:AddVariable("SENSOR_STATE_INT", "", "INT")
+    C4:AddVariable("SENSOR_STATE_FLOAT", "", "FLOAT")
 end
 
 function DRV.OnDriverDestroyed(init)
     C4:DeleteVariable("SENSOR_STATE")
+    C4:DeleteVariable("SENSOR_STATE_INT")
+    C4:DeleteVariable("SENSOR_STATE_FLOAT")
 end
 
 function RFP.RECEIEVE_STATE(idBinding, strCommand, tParams)
@@ -54,6 +58,7 @@ function Parse(data)
     end
     if state == "unavailable" then
         C4:SetVariable("SENSOR_STATE", tostring(state))
+
         if sensorType == "Temperature" then
             SENT_INITIAL_TEMPERATURE = false
             C4:SendToProxy(500, "VALUE_UNAVAILABLE", { STATUS = "offline" }, "NOTIFY")
@@ -67,6 +72,8 @@ function Parse(data)
 
     if state ~= nil and state ~= "unavailable" then
         C4:SetVariable("SENSOR_STATE", tostring(state))
+        C4:SetVariable("SENSOR_STATE_INT", tonumber(state))
+        C4:SetVariable("SENSOR_STATE_FLOAT", tonumber(state))
 
         if sensorType == "Temperature" then
             local numericValue = tonumber(state)
