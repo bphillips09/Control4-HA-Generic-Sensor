@@ -71,6 +71,8 @@ function Parse(data)
     end
 
     if state ~= nil and state ~= "unavailable" then
+        C4:UpdateProperty("Value", tostring(state))
+
         C4:SetVariable("SENSOR_STATE", tostring(state))
         C4:SetVariable("SENSOR_STATE_INT", tonumber(state))
         C4:SetVariable("SENSOR_STATE_FLOAT", tonumber(state))

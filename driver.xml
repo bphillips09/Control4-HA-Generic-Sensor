@@ -6,7 +6,7 @@
 	<model>HA Generic Sensor</model>
 	<created>09/10/2023 12:00</created>
 	<modified>11/17/2023 12:00</modified>
-	<version>105</version>
+	<version>106</version>
 	<control>lua_gen</control>
 	<controlmethod>IP</controlmethod>
 	<driver>DriverWorks</driver>
