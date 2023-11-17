@@ -124,6 +124,7 @@ function Parse(data)
 
             if SENT_INITIAL_HUMIDITY then
                 tParams = {
+                    SCALE = "FAHRENHEIT",
                     VALUE = numericValue,
                     TIMESTAMP = tostring(os.time())
                 }

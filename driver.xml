@@ -35,6 +35,12 @@
 				<readonly>false</readonly>
 			</property>
 			<property>
+				<name>Value</name>
+				<type>STRING</type>
+				<readonly>true</readonly>
+				<default/>
+			</property>
+			<property>
 				<name>Poll Timer</name>
 				<type>LIST</type>
 				<items>
