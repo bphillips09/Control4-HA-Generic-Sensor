@@ -8,9 +8,6 @@ function DRV.OnDriverInit(init)
 end
 
 function DRV.OnDriverDestroyed(init)
-    C4:DeleteVariable("SENSOR_STATE")
-    C4:DeleteVariable("SENSOR_STATE_INT")
-    C4:DeleteVariable("SENSOR_STATE_FLOAT")
 end
 
 function RFP.RECEIEVE_STATE(idBinding, strCommand, tParams)
