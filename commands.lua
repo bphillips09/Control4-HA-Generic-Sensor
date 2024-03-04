@@ -68,24 +68,32 @@ function Parse(data)
     end
 
     if state ~= nil and state ~= "unavailable" then
-        C4:UpdateProperty("Value", tostring(state))
+        local strState = tostring(state)
+        local numericState
 
-        C4:SetVariable("SENSOR_STATE", tostring(state))
-        C4:SetVariable("SENSOR_STATE_INT", tonumber(state))
-        C4:SetVariable("SENSOR_STATE_FLOAT", tonumber(state))
+        if type(state) == "number" then
+            numericState = tonumber(state)
+        else
+            numericState = 0
+        end
+
+        C4:UpdateProperty("Value", strState)
+
+        C4:SetVariable("SENSOR_STATE", strState)
+        C4:SetVariable("SENSOR_STATE_INT", numericState)
+        C4:SetVariable("SENSOR_STATE_FLOAT", numericState)
 
         if sensorType == "Temperature" then
-            local numericValue = tonumber(state)
             local measurement = attributes["unit_of_measurement"]
 
             local celsiusValue
             local fahrenheitValue
 
             if measurement == "°F" then
-                fahrenheitValue = numericValue
+                fahrenheitValue = numericState
                 celsiusValue = ToCelsius(fahrenheitValue)
             elseif measurement == "°C" then
-                celsiusValue = numericValue
+                celsiusValue = numericState
                 fahrenheitValue = ToFahrenheit(celsiusValue)
             end
 
@@ -105,10 +113,10 @@ function Parse(data)
                 }
                 C4:SendToProxy(500, 'VALUE_INITIALIZE', tParams, "NOTIFY")
                 if measurement == "°F" then
-                    fahrenheitValue = numericValue
+                    fahrenheitValue = numericState
                     celsiusValue = ToCelsius(fahrenheitValue)
                 elseif measurement == "°C" then
-                    celsiusValue = numericValue
+                    celsiusValue = numericState
                     fahrenheitValue = ToFahrenheit(celsiusValue)
                 end
                 tParams = {
@@ -119,12 +127,10 @@ function Parse(data)
                 C4:SendToProxy(500, 'VALUE_CHANGED', tParams, "NOTIFY")
             end
         elseif sensorType == "Humidity" then
-            local numericValue = tonumber(state)
-
             if SENT_INITIAL_HUMIDITY then
                 tParams = {
                     SCALE = "FAHRENHEIT",
-                    VALUE = numericValue,
+                    VALUE = numericState,
                     TIMESTAMP = tostring(os.time())
                 }
 
