@@ -69,19 +69,20 @@ function Parse(data)
 
     if state ~= nil and state ~= "unavailable" then
         local strState = tostring(state)
-        local numericState
-
-        if type(state) == "number" then
-            numericState = tonumber(state)
-        else
-            numericState = 0
-        end
+        local numericState = tonumber(state)
 
         C4:UpdateProperty("Value", strState)
-
         C4:SetVariable("SENSOR_STATE", strState)
-        C4:SetVariable("SENSOR_STATE_INT", numericState)
-        C4:SetVariable("SENSOR_STATE_FLOAT", numericState)
+
+        if numericState == nil then
+            numericState = 0
+
+            C4:SetVariable("SENSOR_STATE_INT", numericState)
+            C4:SetVariable("SENSOR_STATE_FLOAT", numericState)
+        else
+            C4:SetVariable("SENSOR_STATE_INT", math.floor(numericState + 0.5))
+            C4:SetVariable("SENSOR_STATE_FLOAT", numericState)
+        end
 
         if sensorType == "Temperature" then
             local measurement = attributes["unit_of_measurement"]
