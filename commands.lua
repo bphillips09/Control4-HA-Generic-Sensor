@@ -5,9 +5,34 @@ function DRV.OnDriverInit(init)
     C4:AddVariable("SENSOR_STATE", "", "STRING")
     C4:AddVariable("SENSOR_STATE_INT", "", "INT")
     C4:AddVariable("SENSOR_STATE_FLOAT", "", "FLOAT")
+    C4:AddVariable("SENSOR_LAST_UPDATED", "", "STRING")
+end
+
+function DRV.OnDriverLateInit(init)
+    OPC.Sensor_Type(Properties["Sensor Type"])
 end
 
 function DRV.OnDriverDestroyed(init)
+end
+
+function DRV.OnBindingChanged(idBinding, strClass, bIsBound)
+    if (bIsBound) then
+        EC.REFRESH()
+    end
+end
+
+function OPC.Sensor_Type(value)
+    local isTemp = (value == "Temperature")
+    local showPropertyValue = 1
+    if isTemp then showPropertyValue = 0 end
+
+    C4:SetPropertyAttribs("Unit Fallback", showPropertyValue)
+
+    EC.REFRESH()
+end
+
+function OPC.Unit_Fallback()
+    EC.REFRESH()
 end
 
 function RFP.RECEIEVE_STATE(idBinding, strCommand, tParams)
@@ -47,12 +72,17 @@ function Parse(data)
 
     local state = data["state"]
     local attributes = data["attributes"]
+    local lastUpdated = data["last_updated"]
+    local lastUpdatedStr = tostring(os.date('%Y-%m-%d %H:%M:%S', ParseTime(lastUpdated)))
+    C4:SetVariable("SENSOR_LAST_UPDATED", lastUpdatedStr)
+    C4:UpdateProperty("Last Updated", lastUpdatedStr)
 
     local tParams = {}
 
     if not Connected then
         Connected = true
     end
+
     if state == "unavailable" then
         C4:SetVariable("SENSOR_STATE", tostring(state))
 
@@ -96,6 +126,16 @@ function Parse(data)
             elseif measurement == "°C" then
                 celsiusValue = numericState
                 fahrenheitValue = ToFahrenheit(celsiusValue)
+            else
+                local unitFallback = Properties["Unit Fallback"]
+
+                if unitFallback == "Fahrenheit" then
+                    fahrenheitValue = numericState
+                    celsiusValue = ToCelsius(fahrenheitValue)
+                else
+                    celsiusValue = numericState
+                    fahrenheitValue = ToFahrenheit(celsiusValue)
+                end
             end
 
             if SENT_INITIAL_TEMPERATURE then
